@@ -24,122 +24,53 @@ int main(int argc, const char * argv[]) {
     str_vec = string_split(str); // 문자열을 벡터에 저장할 수 있도록 해 주는 작업
     
     bool Ans = hasWord(Boggle, 0, 2, 2, str_vec); // y,x 기준은 0이 아닌 1부터 시작하는 걸로.
+    std::cout << Ans << '\n';
     
     return 0;
 }
 
 bool hasWord(const std::vector<std::vector<char>>& Boggle, int index, int y, int x, const std::vector<char>& str_vec)
 {
+    // 위치가 범위 밖일 때 예외처리
+    if(x<=0 || x>4 || y<=0 || y>4)
+        return false;
+    
     // ex. index가 0 (처음상황)이라면 첫글자부터 보글판에서 뻑이 난 경우.
     if(Boggle[y-1][x-1] != str_vec[index])
         return false;
+        
+    // * 재귀 호출은 함수 내에서 쓸 땐 한번으로 끝내자.
+    // * 어차피 방향은 정해져 있으므로 방향에 대한 배열을 정해놓기
+    
+    int dy[8] = {-1, -1, -1, 1, 1, 1, 0, 0};
+    int dx[8] = {-1, 0, 1, -1, 0, 1, -1, 1};
+    
+    for(int d = 0; d < 8; d++)
+    {
+        int next_y = y + dy[d];
+        int next_x = x + dx[d];
+        
+        if(hasWord(Boggle, index + 1, next_y, next_x, str_vec))
+        {
+            std::cout<<"Yeah!"<<'\n';
+            return true;
+        }
+        
+        /*
+        if(index < str_vec.size() && hasWord(Boggle, index + 1, next_y, next_x, str_vec))
+            return true;
+         */
+    }
     
     // 주위의 칸은 8칸이 될 수도 있고 더 적은 칸수가 남을 수도 있다.
     // 단, 왼쪽과 오른쪽 모두에 칸이 없을 수는 없고 위쪽과 아래쪽 모두에 칸이 없을 수는 없다.
     
-    if(y-1 <= 0) // 위쪽에 칸이 없는 경우
+    if(index==str_vec.size()-1)
     {
-        if(x-1 <= 0) // 왼쪽에 칸이 없는 경우
-        {
-            // 기준의 칸으로부터 아래, 대각선(오른)아래, 오른
-            hasWord(Boggle, index+1, y+1, x, str_vec); // 아래
-            hasWord(Boggle, index+1, y+1, x+1, str_vec); // 대각선(오른)아래
-            hasWord(Boggle, index+1, y, x+1, str_vec); // 오른
-        }
-        
-        else if(x-1 >= 4) // 오른쪽에 칸이 없는 경우
-        {
-            // 기준의 칸으로부터 아래, 대각선(왼)아래, 왼
-            hasWord(Boggle, index+1, y+1, x, str_vec); // 아래
-            hasWord(Boggle, index+1, y+1, x-1, str_vec); // 대각선(왼)아래
-            hasWord(Boggle, index+1, y, x-1, str_vec); // 왼
-        }
-        
-        else // 왼쪽, 오른쪽 모두에 칸이 있는 경우
-        {
-            // 기준의 칸으로부터 왼쪽, 오른쪽, 대각선(왼,오른)아래, 아래
-            hasWord(Boggle, index+1, y, x+1, str_vec); // 오른
-            hasWord(Boggle, index+1, y+1, x-1, str_vec); // 대각선(왼)아래
-            hasWord(Boggle, index+1, y+1, x+1, str_vec); // 대각선(오른)아래
-            hasWord(Boggle, index+1, y, x-1, str_vec); // 왼
-            hasWord(Boggle, index+1, y+1, x, str_vec); // 아래
-        }
-    }
-    
-    else if(y-1 >= 4) // 아래쪽에 칸이 없는 경우
-    {
-        if(x-1 <= 0) // 왼쪽에 칸이 없는 경우
-        {
-            // 기준의 칸으로부터 위, 대각선(오른)위, 오른
-            hasWord(Boggle, index+1, y-1, x, str_vec); // 위
-            hasWord(Boggle, index+1, y-1, x+1, str_vec); // 대각선(오른)위
-            hasWord(Boggle, index+1, y, x+1, str_vec); // 오른
-        }
-        
-        else if(x-1 >= 4) // 오른쪽에 칸이 없는 경우
-        {
-            // 기준의 칸으로부터 위, 대각선(왼)위, 왼
-            hasWord(Boggle, index+1, y-1, x, str_vec); // 위
-            hasWord(Boggle, index+1, y-1, x-1, str_vec); // 대각선(왼)위
-            hasWord(Boggle, index+1, y, x-1, str_vec); // 왼
-        }
-        
-        else // 왼쪽, 오른쪽 모두에 칸이 있는 경우
-        {
-            // 기준의 칸으로부터 왼쪽, 오른쪽, 대각선(왼,오른)위, 위
-            hasWord(Boggle, index+1, y, x+1, str_vec); // 오른
-            hasWord(Boggle, index+1, y-1, x-1, str_vec); // 대각선(왼)위
-            hasWord(Boggle, index+1, y-1, x+1, str_vec); // 대각선(오른)위
-            hasWord(Boggle, index+1, y, x-1, str_vec); // 왼
-            hasWord(Boggle, index+1, y-1, x, str_vec); // 위
-        }
-    }
-    
-    else // 위쪽, 아래쪽 모두 칸이 있음
-    {
-        if(x-1 <= 0) // 왼쪽에 칸이 없는 경우
-               {
-                   // 기준의 칸으로부터 위, 대각선(오른)위, 오른
-                   hasWord(Boggle, index+1, y-1, x, str_vec); // 위
-                   hasWord(Boggle, index+1, y+1, x, str_vec); // 아래
-                   hasWord(Boggle, index+1, y-1, x+1, str_vec); // 대각선(오른)위
-                   hasWord(Boggle, index+1, y+1, x+1, str_vec); // 대각선(오른)아래
-                   hasWord(Boggle, index+1, y, x+1, str_vec); // 오른
-               }
-               
-               else if(x-1 >= 4) // 오른쪽에 칸이 없는 경우
-               {
-                   // 기준의 칸으로부터 위, 대각선(왼)위, 왼
-                   hasWord(Boggle, index+1, y-1, x, str_vec); // 위
-                   hasWord(Boggle, index+1, y+1, x, str_vec); // 아래
-                   hasWord(Boggle, index+1, y-1, x-1, str_vec); // 대각선(왼)위
-                   hasWord(Boggle, index+1, y+1, x-1, str_vec); // 대각선(왼)아래
-                   hasWord(Boggle, index+1, y, x-1, str_vec); // 왼
-               }
-               
-               else // 왼쪽, 오른쪽 모두에 칸이 있는 경우
-               {
-                   // 8방향 모두
-                   hasWord(Boggle, index+1, y, x+1, str_vec); // 오른
-                   hasWord(Boggle, index+1, y-1, x-1, str_vec); // 대각선(왼)위
-                   hasWord(Boggle, index+1, y-1, x+1, str_vec); // 대각선(오른)위
-                   hasWord(Boggle, index+1, y, x-1, str_vec); // 왼
-                   hasWord(Boggle, index+1, y-1, x, str_vec); // 위
-                   hasWord(Boggle, index+1, y+1, x, str_vec); // 아래
-                   hasWord(Boggle, index+1, y+1, x-1, str_vec); // 대각선(왼)아래
-                   hasWord(Boggle, index+1, y+1, x+1, str_vec); // 대각선(오른)아래
-               }
-    }
-    
-    if(index == str_vec.size())
-    {
-        std::cout<<"True!"<<'\n';
+        std::cout<<"Yeah!"<<'\n';
         return true;
     }
     
-    else
-    {
-        return false;
-    }
+    return false;
 }
 

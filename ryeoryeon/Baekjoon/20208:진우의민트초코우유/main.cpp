@@ -63,6 +63,10 @@ int main(int argc, const char * argv[]) {
     // int dr[4] = {0, 1, 0, -1};
     // int dc[4] = {-1, 0, 1, 0};
     
+    //cin과 cout을 쓰는 경우에는 밑의 코드 최소 두 줄, 최대 세 줄 추가합시다
+    //ios_base::sync_with_stdio(0);
+    //cin.tie(0);
+    //cout.tie(0);
     int villSize, HP, maxMint = 0;
     cin>>villSize>>HP>>mintHP;
     

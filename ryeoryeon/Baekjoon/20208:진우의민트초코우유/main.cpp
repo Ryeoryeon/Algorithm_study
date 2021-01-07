@@ -96,6 +96,6 @@ int main(int argc, const char * argv[]) {
     maxMint = findMint(HP, HomeR, HomeC, maxMint, -1, mintListR, mintListC);
     
     cout<<maxMint;
-    
+    //cout 사용시 endl을 사용하지 맙시다.`
     return 0;
 }
